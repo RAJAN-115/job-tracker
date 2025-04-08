@@ -1,6 +1,19 @@
-# Job Tracker Application
+# Job Application Tracker
 
 A full-stack job application tracking system built with the MERN stack (MongoDB, Express.js, React, Node.js).
+
+## Live Demo
+
+- Frontend: [https://job-tracker-dusky.vercel.app](https://job-tracker-dusky.vercel.app)
+- Backend API: [https://job-tracker-backend-fp1h.onrender.com](https://job-tracker-backend-fp1h.onrender.com)
+
+## Important Note for Recruiters
+
+This application uses a free-tier backend service that may go to sleep after periods of inactivity. If you encounter issues:
+
+1. Please wait 30-60 seconds for the backend to wake up
+2. Refresh the page after the backend is active
+3. If problems persist, you can run the application locally using the instructions below
 
 ## Features
 
@@ -14,22 +27,19 @@ A full-stack job application tracking system built with the MERN stack (MongoDB,
 
 ### Frontend
 
-- React
-- Vite
-- React Router DOM
+- React with Vite
+- Material-UI components
 - Axios for API calls
-- Tailwind CSS for styling
+- Responsive design with MUI
 
 ### Backend
 
-- Node.js
-- Express.js
-- MongoDB Atlas
-- Mongoose ODM
-- CORS
-- Dotenv for environment variables
+- Node.js with Express
+- MongoDB Atlas for database
+- RESTful API architecture
+- CORS enabled for security
 
-## Installation
+## Local Development
 
 ### Prerequisites
 
@@ -42,7 +52,7 @@ A full-stack job application tracking system built with the MERN stack (MongoDB,
 1. **Clone the repository**
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/RAJAN-115/job-tracker.git
 cd job-tracker
 ```
 
@@ -52,7 +62,7 @@ cd job-tracker
 cd backend
 npm install
 cp .env.example .env    # Create your .env file
-# Update .env with your MongoDB URI and other configurations
+# Update .env with your MongoDB URI
 npm start
 ```
 
@@ -64,30 +74,19 @@ npm install
 npm run dev
 ```
 
-4. **Environment Variables**
+## Deployment
 
-Backend `.env` file should contain:
+### Backend (Render)
 
-```
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-```
+- Deployed at: https://job-tracker-backend-fp1h.onrender.com
+- Auto-deploys from main branch
+- Environment variables configured in Render dashboard
 
-## Project Structure
+### Frontend (Vercel)
 
-```
-job-tracker/
-├── frontend/           # React frontend
-│   ├── src/           # Source files
-│   ├── public/        # Public assets
-│   └── package.json   # Frontend dependencies
-├── backend/
-│   ├── models/        # MongoDB models
-│   ├── routes/        # API routes
-│   ├── server.js      # Server configuration
-│   └── .env           # Backend environment variables
-└── README.md          # Project documentation
-```
+- Deployed at: https://job-tracker-dusky.vercel.app
+- Auto-deploys from main branch
+- Environment variables configured in Vercel dashboard
 
 ## API Endpoints
 
@@ -104,6 +103,17 @@ job-tracker/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Future Enhancements
+
+- [ ] User authentication
+- [ ] Job application statistics
+- [ ] Email notifications
+- [ ] Mobile app version
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Rajan - [GitHub Profile](https://github.com/RAJAN-115)

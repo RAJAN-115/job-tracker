@@ -1,22 +1,25 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Button, 
-  Snackbar, 
-  Alert,
-  CircularProgress
-} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  CssBaseline,
+  Snackbar,
+  ThemeProvider,
+  Typography,
+} from '@mui/material';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
-import theme from './theme/theme';
 import Header from './components/Header';
-import JobList from './components/JobList';
 import JobForm from './components/JobForm';
+import JobList from './components/JobList';
+import config from './config';
 import { jobService } from './services/api';
+import theme from './theme/theme';
 
 function App() {
   const [jobs, setJobs] = useState([]);
@@ -24,11 +27,33 @@ function App() {
   const [error, setError] = useState(null);
   const [openForm, setOpenForm] = useState(false);
   const [currentJob, setCurrentJob] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('checking');
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success'
+    severity: 'success',
   });
+
+  // Check backend status
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const response = await axios.get(`${config.apiUrl}/`);
+        if (response.data && response.data.status === 'ok') {
+          setBackendStatus('connected');
+        } else {
+          setBackendStatus('disconnected');
+        }
+      } catch (error) {
+        console.error('Backend connection error:', error);
+        setBackendStatus('disconnected');
+      }
+    };
+
+    checkBackend();
+    const interval = setInterval(checkBackend, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   // Fetch all jobs on component mount
   useEffect(() => {
@@ -39,12 +64,14 @@ function App() {
     try {
       setLoading(true);
       const response = await jobService.getAllJobs();
-      setJobs(response.data);
+      setJobs(response.data || []);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setError(error.message || 'Error fetching jobs');
+      showNotification(error.message || 'Error fetching jobs', 'error');
+    } finally {
       setLoading(false);
-    } catch (err) {
-      setError('Error fetching jobs: ' + (err.response?.data?.message || err.message));
-      setLoading(false);
-      showNotification('Error fetching jobs', 'error');
     }
   };
 
@@ -58,23 +85,26 @@ function App() {
     setCurrentJob(null);
   };
 
-  const handleEditJob = (job) => {
+  const handleEditJob = job => {
     setCurrentJob(job);
     setOpenForm(true);
   };
 
-  const handleDeleteJob = async (id) => {
+  const handleDeleteJob = async id => {
     try {
+      setLoading(true);
       await jobService.deleteJob(id);
       setJobs(jobs.filter(job => job._id !== id));
       showNotification('Job deleted successfully', 'success');
-    } catch (err) {
-      showNotification('Error deleting job', 'error');
-      console.error(err);
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      showNotification(error.message || 'Error deleting job', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const addOrUpdateJob = async (jobData) => {
+  const addOrUpdateJob = async jobData => {
     try {
       if (jobData._id) {
         // Update existing job
@@ -97,14 +127,14 @@ function App() {
     setNotification({
       open: true,
       message,
-      severity
+      severity,
     });
   };
 
   const handleCloseNotification = () => {
     setNotification({
       ...notification,
-      open: false
+      open: false,
     });
   };
 
@@ -114,68 +144,75 @@ function App() {
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+          {/* Backend Status Indicator */}
+          {backendStatus === 'disconnected' && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Backend service is currently unavailable. Some features may be limited. Please try
+              again in a few moments.
+            </Alert>
+          )}
+
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="h4" component="h1" gutterBottom>
               Job Applications
             </Typography>
-            <Button 
-              variant="contained" 
-              color="primary" 
+            <Button
+              variant="contained"
+              color="primary"
               startIcon={<AddIcon />}
               onClick={handleOpenForm}
+              disabled={backendStatus === 'disconnected'}
             >
               Add New
             </Button>
           </Box>
-          
+
           {/* Loading State */}
           {loading ? (
             <Box display="flex" justifyContent="center" my={4}>
               <CircularProgress />
             </Box>
           ) : error ? (
-            <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
           ) : (
-            <JobList 
-              jobs={jobs} 
-              onEdit={handleEditJob} 
-              onDelete={handleDeleteJob} 
-            />
+            <JobList jobs={jobs} onEdit={handleEditJob} onDelete={handleDeleteJob} />
           )}
-          
+
           {/* Job Form Dialog */}
-          <JobForm 
-            open={openForm} 
+          <JobForm
+            open={openForm}
             handleClose={handleCloseForm}
             currentJob={currentJob}
             addOrUpdateJob={addOrUpdateJob}
           />
-          
+
           {/* Notification Snackbar */}
-          <Snackbar 
-            open={notification.open} 
-            autoHideDuration={6000} 
+          <Snackbar
+            open={notification.open}
+            autoHideDuration={6000}
             onClose={handleCloseNotification}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           >
-            <Alert 
-              onClose={handleCloseNotification} 
-              severity={notification.severity} 
+            <Alert
+              onClose={handleCloseNotification}
+              severity={notification.severity}
               sx={{ width: '100%' }}
             >
               {notification.message}
             </Alert>
           </Snackbar>
         </Container>
-        
+
         {/* Footer */}
-        <Box 
-          component="footer" 
-          sx={{ 
-            py: 3, 
-            px: 2, 
-            mt: 'auto', 
-            backgroundColor: theme.palette.grey[100] 
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            px: 2,
+            mt: 'auto',
+            backgroundColor: theme.palette.grey[100],
           }}
         >
           <Container maxWidth="sm">

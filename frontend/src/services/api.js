@@ -10,6 +10,22 @@ const api = axios.create({
   },
 });
 
+// Validate MongoDB ObjectId
+const isValidObjectId = id => {
+  const objectIdPattern = /^[0-9a-fA-F]{24}$/;
+  return objectIdPattern.test(id);
+};
+
+// Fetch with fallback data
+const fetchWithFallback = async (apiCall, fallbackData) => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    console.warn('API unavailable, using fallback data:', error);
+    return fallbackData;
+  }
+};
+
 // Add response interceptor for error handling
 api.interceptors.response.use(
   response => response,
@@ -28,13 +44,14 @@ api.interceptors.response.use(
     // Specific error handling
     switch (error.response?.status) {
       case 400:
-        customError.message = 'Bad request - please check your input';
+        customError.message =
+          error.response.data.message || 'Bad request - please check your input';
         break;
       case 401:
         customError.message = 'Unauthorized - please login again';
         break;
       case 404:
-        customError.message = 'Resource not found';
+        customError.message = error.response.data.message || 'Resource not found';
         break;
       case 500:
         customError.message = 'Server error - please try again later';
@@ -51,57 +68,66 @@ api.interceptors.response.use(
 export const jobService = {
   // Get all jobs
   getAllJobs: async () => {
-    try {
-      const response = await api.get('/jobs');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-      throw error;
-    }
+    return fetchWithFallback(
+      async () => {
+        const response = await api.get('/jobs');
+        return response.data;
+      },
+      { success: true, count: 0, data: [] }
+    );
   },
 
   // Get a single job
   getJobById: async id => {
-    try {
-      const response = await api.get(`/jobs/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching job ${id}:`, error);
-      throw error;
+    if (!isValidObjectId(id)) {
+      throw new Error('Invalid job ID format');
     }
+    return fetchWithFallback(
+      async () => {
+        const response = await api.get(`/jobs/${id}`);
+        return response.data;
+      },
+      { success: false, message: 'Job not found', data: null }
+    );
   },
 
   // Create a new job
   createJob: async jobData => {
-    try {
-      const response = await api.post('/jobs', jobData);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating job:', error);
-      throw error;
-    }
+    return fetchWithFallback(
+      async () => {
+        const response = await api.post('/jobs', jobData);
+        return response.data;
+      },
+      { success: false, message: 'Failed to create job', data: null }
+    );
   },
 
   // Update a job
   updateJob: async (id, jobData) => {
-    try {
-      const response = await api.put(`/jobs/${id}`, jobData);
-      return response.data;
-    } catch (error) {
-      console.error(`Error updating job ${id}:`, error);
-      throw error;
+    if (!isValidObjectId(id)) {
+      throw new Error('Invalid job ID format');
     }
+    return fetchWithFallback(
+      async () => {
+        const response = await api.put(`/jobs/${id}`, jobData);
+        return response.data;
+      },
+      { success: false, message: 'Failed to update job', data: null }
+    );
   },
 
   // Delete a job
   deleteJob: async id => {
-    try {
-      const response = await api.delete(`/jobs/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error deleting job ${id}:`, error);
-      throw error;
+    if (!isValidObjectId(id)) {
+      throw new Error('Invalid job ID format');
     }
+    return fetchWithFallback(
+      async () => {
+        const response = await api.delete(`/jobs/${id}`);
+        return response.data;
+      },
+      { success: false, message: 'Failed to delete job', data: {} }
+    );
   },
 };
 
