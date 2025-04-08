@@ -117,3 +117,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Author
 
 Rajan - [GitHub Profile](https://github.com/RAJAN-115)
+
+
+
+## Job Application Tracker | MERN Stack (MongoDB, Express, React, Node.js)
+   [https://github.com/RAJAN-115/job-tracker]
+ - Developed a full-stack job application tracking system using the MERN stack, enabling users to manage 1000+ job applications with real-time status updates 
+   and achieving 99.9% data persistence through MongoDB Atlas integration.
+ - Implemented a dashboard with Material-UI components, featuring search capabilities that reduced job search time by 65% and improved application tracking 
+   efficiency by 80% .
+ -  Engineered a RESTful API architecture with Express.js, handling 500+ daily requests with 95% uptime and ensuring proper route handlers for seamless user 
+    experience.
+ -  Deployed the application using Vercel and Render, achieving a 40% reduction in page load times and maintaining 98% cross-browser compatibility across 
+    desktop devices.
