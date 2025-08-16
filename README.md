@@ -7,6 +7,10 @@ A full-stack job application tracking system built with the MERN stack (MongoDB,
 - Frontend: [https://job-tracker-dusky.vercel.app](https://job-tracker-dusky.vercel.app)
 - Backend API: [https://job-tracker-backend-fp1h.onrender.com](https://job-tracker-backend-fp1h.onrender.com)
 
+
+## notebook lm for more information
+https://notebooklm.google.com/notebook/00f74474-c4d7-4a19-a63a-31127db54d27
+
 ## Important Note for Recruiters
 
 This application uses a free-tier backend service that may go to sleep after periods of inactivity. If you encounter issues:
