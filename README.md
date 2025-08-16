@@ -298,9 +298,6 @@ curl http://localhost:5000/api/jobs/64f8b2a3c1234567890abcdef
 - Mobile keyboard may overlap form inputs on some devices
 - Large datasets (1000+ jobs) may experience slower load times
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
