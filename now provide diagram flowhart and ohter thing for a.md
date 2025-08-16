@@ -1,8 +1,5 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
-# now provide diagram flowhart and ohter thing for above
 
-Perfect! I've created a comprehensive set of diagrams and visual assets for your Job Application Tracker README. Here are all the diagrams and images you can use:
 
 ## 🎨 Complete Visual Asset Collection
 
